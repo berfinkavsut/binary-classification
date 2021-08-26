@@ -1,1 +1,1 @@
-# Binary Classification for Heart Disease Project 
+# Binary Classification for Heart Disease
