@@ -10,6 +10,11 @@ biomarkers. The core machine learning algorithms are;
 - K Nearest Neighbours
 - Support Vector Machines
 
+# Dataset
+UCI Machine Learning Repository: Heart Disease Data Set. 
+Link: https://archive.ics.uci.edu/ml/datasets/Heart+Disease
+
 More information can be found in the final project report.
+
 
 
