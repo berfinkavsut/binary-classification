@@ -1,6 +1,6 @@
 """
-Authors: Berfin Kavşut -  21602459
-         Mert Ertuğrul - 21703957
+Authors: Berfin Kavşut 
+         Mert Ertuğrul 
 """
 
 import numpy as np
@@ -10,7 +10,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #Distance Metrics
-
 def euclidian_distance(x1,x2):
     return np.sqrt(np.sum((x1-x2)**2))
 
@@ -25,7 +24,7 @@ def KNN_classify(x_train, y_train , x_test, k, distance = "euclidian"):
     
     """
     K Nearest Neighbours algorithm computes the data point's distance to other 
-    data points accoridng to a given metric in the feauture space and selects the
+    data points according to a given metric in the feauture space and selects the
     majority vote label of k nearest neighbours.
     
     x_train: training set features
@@ -37,7 +36,6 @@ def KNN_classify(x_train, y_train , x_test, k, distance = "euclidian"):
     
     result_labels = []
      
-    #Loop through the datapoints to be classified
     for item in x_test: 
          
         #distances to training data points
@@ -54,7 +52,7 @@ def KNN_classify(x_train, y_train , x_test, k, distance = "euclidian"):
             distances.append(new_dist) 
 
         #sorts distances and returns their original indices, takes the last k distances
-        indices = np.argsort( np.array(distances) )[:k] 
+        indices = np.argsort(np.array(distances))[:k] 
         labels = y_train[indices]
          
         #most common label selected
@@ -64,53 +62,50 @@ def KNN_classify(x_train, y_train , x_test, k, distance = "euclidian"):
  
     return result_labels
         
-        
-#standalone main function to demonstrate the model's k-fold cross validation results on graphs     
+  
 def main_knn_grid_search(add_PCA = True):
     np.random.seed(1)
     
-    
-    
-    #reading the data into a pandas dataframe and converting to numpy array
+    #reading the data
     data_heart = pd.read_csv('./heart.csv')
     
     D = data_heart.values
     
-    #train test split
+    #train-test split
     D_train, D_test = utilities.split_train_test(D)  
 
     #standardizing and shuffling the data 
     standardizer = utilities.Standardizer()
+   
     #train data
-    
-    D_train = standardizer.standardize_data( D_train )
+    D_train = standardizer.standardize_data(D_train)
+   
     #test data - statistical proeprties of test data do not leak into standardization parameters
-    D_test = standardizer.standardize_data( D_test, testing=True )
+    D_test = standardizer.standardize_data(D_test, testing=True)
     
-    #----------- adding PCA
+    #adding PCA
     if add_PCA:
         pca_obj = PCA.PCA_maker(X= D_train[:, :-1], n_components=8)
         PCA_features_train = pca_obj.apply_pca(X=D_train[:, :-1], display=False)
     
-        D_train = np.hstack( ( D_train[:, :-1], PCA_features_train, D_train[:, -1].reshape(D_train.shape[0],1) ) )
+        D_train = np.hstack((D_train[:, :-1], PCA_features_train, D_train[:, -1].reshape(D_train.shape[0],1)))
         #print(D_train.shape)
         
         PCA_features_test = pca_obj.apply_pca(X=D_test[:, :-1], display=False)
-        D_test = np.hstack( ( D_test[:, :-1], PCA_features_test, D_test[:, -1].reshape(D_test.shape[0],1) ) )
+        D_test = np.hstack((D_test[:, :-1], PCA_features_test, D_test[:, -1].reshape(D_test.shape[0],1)))
     
     #number of folds for k fold cross validation
     k_fold=5
-    
 
     #creating the individual folds and seperating the label vector
-    X_folds,Y_folds = utilities.k_fold_split( D_train, k_fold )
+    X_folds,Y_folds = utilities.k_fold_split(D_train, k_fold)
     
     #range of k values to be tested for k nearest neighbors  
     K_values = [3,5,7,9,11,13,15,19,21,23,25,50,70,100,125,150,175,200,225,250]
+    
     #different distance types to be tested
     distances = ["euclidian", "cosine", "manhattan"]
     
-
     #keeps accuracy values for each distance metric
     accuracies_per_dist = []
     
@@ -125,7 +120,7 @@ def main_knn_grid_search(add_PCA = True):
     ax2 = fig.add_subplot(2, 1, 2)
     ax2.set_xlabel('K value')
     ax2.set_ylabel('Cross Validation Accuracy')
-    ax2.set_title('Impact of k and Distance Type on Average Accuracy ')
+    ax2.set_title('Impact of k and Distance Type on Average Accuracy')
     ax2.set_ylim([0, 1])
     
     max_params= ()
@@ -137,13 +132,14 @@ def main_knn_grid_search(add_PCA = True):
         #print("For distance type: "+dist)
         
         #keeps accuracy values for each run
-        accuracy_data_k = np.zeros( (k_fold,len(K_values) ))
+        accuracy_data_k = np.zeros((k_fold,len(K_values)))
         
         #for each of the folds being used for validation
         for i in range(k_fold):
           #taking all folds other than the ith one for training
-          X_train = np.concatenate( X_folds[:i] + X_folds[i+1:] , axis=0 )
-          Y_train = np.concatenate( Y_folds[:i] + Y_folds[i+1:] , axis=0 )
+          X_train = np.concatenate(X_folds[:i] + X_folds[i+1:] , axis=0)
+          Y_train = np.concatenate(Y_folds[:i] + Y_folds[i+1:] , axis=0)
+          
           #ith fold is used for validation
           X_val = X_folds[i]
           Y_val = Y_folds[i]
@@ -151,11 +147,10 @@ def main_knn_grid_search(add_PCA = True):
           for k_index, k in enumerate(K_values):
         
               labels = KNN_classify(X_train, Y_train , X_val, k, dist)
+              
               #average accuracy accross the validation fold
               accuracy = np.sum(labels == Y_val) / Y_val.shape[0]
-              
               accuracy_data_k[i][ k_index] = accuracy
-            
               
         #averaging accross folds
         avg_accuracy =  np.mean(accuracy_data_k, axis=0)
@@ -172,18 +167,16 @@ def main_knn_grid_search(add_PCA = True):
     print("Maximum cv accuracy of " + str(max_accuracy) + " found for k="+str(K_values[max_params[1]])+" distance:"+distances[max_params[0]])
 
     for i in range(k_fold):
-        ax.plot(K_values, accuracies_per_dist[ max_params[0] ][i] )          
+        ax.plot(K_values, accuracies_per_dist[ max_params[0] ][i])          
     ax.plot(K_values, avg_accuracy, label= "average", linewidth=5.0)
     
     ax.set_title('k (knn parameter) vs CV Accuracy Graph for K Folds, Distance:'+distances[max_params[0]])
     ax.legend()
     ax2.legend()
     plt.show()
-    
     #fig.savefig('KNN_Plots_2.png')
     
-    #----- TESTING ----------------------------
-    
+    # TESTING
     print("Now we test the model using the best parameter set.")
           
     X_train = D_train[:, :-1]
@@ -192,11 +185,8 @@ def main_knn_grid_search(add_PCA = True):
     X_test = D_test[:, :-1]
     Y_test = D_test[:, -1]
     
-
-    #testing
     Y_predicted = KNN_classify(X_train, Y_train , X_test, K_values[max_params[1]], distances[max_params[0]])
-    
-
+  
     print("---- KNN Test Results ----")
     utilities.get_metrics(Y_test, Y_predicted, print_metrics=True)
     

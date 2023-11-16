@@ -1,3 +1,7 @@
+"""
+Authors: Berfin Kavşut
+         Mert Ertuğrul
+"""
 
 import utilities
 
@@ -14,15 +18,16 @@ class PCA_maker:
         
         self.k = n_components
     
-        # normalizing the features wrt training set
+        #normalizing the features wrt training set
         self.standardScaler = StandardScaler().fit(X) 
         X = self.standardScaler.transform(X)
-        #print(np.mean(X),np.std(X))
         
-        # p x p, p is feature number
+        #p x p, p is feature number
         sigma = np.cov(X.T)  
+        
         #each column of eigen_vectors is u, eigen_values are lambdas
         eigen_values, eigen_vectors = np.linalg.eig(sigma) 
+       
         #now, each row is eigenvector (for sorting)
         eigen_vectors = eigen_vectors.T 
 
@@ -39,7 +44,6 @@ class PCA_maker:
         self.U = eigen_vectors.T 
         
         #Z = np.dot( X, self.U[:,0:self.k] )
-        
         #D = np.diag(eigen_values)
         #error = np.sum(np.square(np.dot(U,D)-np.dot(sigma,U)))
         #print('Diagonalization MSE:', error)
@@ -58,17 +62,13 @@ class PCA_maker:
             PVE_m_list = []
             PVE_k = 0
             for m in range(self.k):
-                total_variance = (1/n)*np.sum(np.square(X)) #13 directly since there are 13 features 
+                total_variance = (1/n)*np.sum(np.square(X)) 
                 variance_explained = (1/n)*np.sum(np.square(Z[:,m])) 
     
                 PVE_m = variance_explained/total_variance
                 PVE_m_list.append(PVE_m)
                 PVE_k = PVE_k + PVE_m
                 PVE_k_list.append(PVE_k)
-            
-            #print('PVE_k:', PVE_k_list)
-            #print('PVE_m:', PVE_m_list)
-            
             
             x_axis = np.arange(self.k)
     
@@ -93,19 +93,16 @@ class PCA_maker:
             plt.show()
     
         return Z
-
-
-
+    
 
 def main_pca():
     
     data_heart = pd.read_csv('./heart.csv')
-    
     data = data_heart.values
     
-    # split features and label
+    #split features and label
     X = data[:, :-1]
-    X = StandardScaler().fit_transform(X) # normalizing the features
+    X = StandardScaler().fit_transform(X) #normalizing the features
     
     Y = data[:, -1]
     Y = np.reshape(Y,(Y.shape[0],1)) #to concatenate later 
@@ -115,9 +112,8 @@ def main_pca():
     
     pca_obj = PCA_maker(X=X, n_components=k)
     principal_component_scores = pca_obj.apply_pca(X=X, display=True)
-    
-    
-    #-----Plotting the first two principal components against each other
+
+    #plotting the first two principal components against each other
     plt.figure()
     plt.figure(figsize=(10,10))
     plt.xticks(fontsize=12)

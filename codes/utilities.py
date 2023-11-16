@@ -1,14 +1,14 @@
 """
-Authors: Berfin Kavşut -  21602459
-         Mert Ertuğrul - 21703957
+Authors: Berfin Kavşut
+         Mert Ertuğrul
 """
+
 import math
 import numpy as np
 from sklearn.metrics import precision_score, \
     recall_score, confusion_matrix, classification_report, \
     accuracy_score, f1_score
 import matplotlib.pyplot as plt
-
 
 
 class Standardizer:
@@ -54,7 +54,7 @@ class Standardizer:
 
     A = (X - self.mean_vector) / self.std_vector
 
-        #some rows should not be standardized 
+    #some rows should not be standardized 
     A[:,1] = X[:,1]
     A[:,5] = X[:,5]
     A[:,6] = X[:,6]
@@ -65,7 +65,6 @@ class Standardizer:
     np.take(A,np.random.permutation(A.shape[0]),axis=0,out=A)
 
     return A
-
 
 
 def k_fold_split( D, k ):
@@ -84,11 +83,7 @@ def k_fold_split( D, k ):
   X_folds = [ D[ i*fold_size: min( D.shape[0], (i+1)*fold_size ) , :-1] for i in range(k) ]
   Y_folds = [ D[ i*fold_size: min( D.shape[0], (i+1)*fold_size ) , -1] for i in range(k) ]
 
-  #for i in range(k):
-     #print(Y_folds[i].shape) 
-
   return X_folds, Y_folds 
-
 
 
 def split_train_test(D, test_fraction = 0.1):
@@ -101,6 +96,7 @@ def split_train_test(D, test_fraction = 0.1):
   D_train = D[test_idx:]
     
   return D_train, D_test
+
 
 def get_metrics(Y_real, Y_predicted, print_metrics=True):
     
@@ -128,5 +124,3 @@ def get_metrics(Y_real, Y_predicted, print_metrics=True):
         
         
     return accuracy,precision,recall,f1
-
-    

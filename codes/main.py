@@ -1,12 +1,12 @@
 """
-Authors: Berfin Kavşut -  21602459
-         Mert Ertuğrul - 21703957
+Authors: Berfin Kavşut
+         Mert Ertuğrul
 """
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-# import pandas_profiling as pp
+
 
 pd.set_option('display.max_columns', None)
 data_heart = pd.read_csv('./heart.csv')

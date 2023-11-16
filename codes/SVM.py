@@ -1,6 +1,6 @@
 """
-Authors: Berfin Kavşut -  21602459
-         Mert Ertuğrul - 21703957
+Authors: Berfin Kavşut
+         Mert Ertuğrul
 """
 
 import numpy as np
@@ -151,19 +151,13 @@ def main():
 
     # split features and label
     X = input[:, :-1]
-    # print(X.shape)
     Y = input[:, -1]
-    # print(Y.shape)
 
     # split training set and test set
     X_train = X[:int(X.shape[0] * 0.9)]
-    # print(X_train.shape)
     X_test = X[int(X.shape[0] * 0.9):]
-    # print(X_test.shape)
     Y_train = Y[:int(Y.shape[0] * 0.9)]
-    # print(Y_train.shape)
     Y_test = Y[int(Y.shape[0] * 0.9):]
-    # print(Y_test.shape)
 
     # change labels of 0 to -1, negative class
     Y_train = np.where(Y_train == 0, -1, Y_train)
@@ -181,7 +175,6 @@ def main():
     accuracy, y_preds = svm_model.score(X_test, Y_test)
     print('Test Accuracy:', accuracy)
 
+
 if __name__ == '__main__':
     main()
-
-

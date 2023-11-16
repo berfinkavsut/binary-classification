@@ -1,6 +1,6 @@
 """
-Authors: Berfin Kavşut -  21602459
-         Mert Ertuğrul - 21703957
+Authors: Berfin Kavşut
+         Mert Ertuğrul
 """
 
 import numpy as np
@@ -78,6 +78,7 @@ class networkLayer:
       #gradient of params
       self.d_W = (1/self.input_X.shape[1]) * np.dot(d_Z, self.input_X.T) 
       self.d_b = (1/self.input_X.shape[1]) * np.sum(d_Z, axis=1, keepdims=True) 
+     
       #gradient of input
       d_in = np.dot(self.W.T, d_Z)
       
@@ -98,8 +99,7 @@ class networkLayer:
     #sigmoid activation function used for last layer
     def sigmoid(self, X):
       return 1/(1+np.exp(-X))
-     
-
+    
 
 class NeuralNetwork:
     
@@ -147,16 +147,16 @@ class NeuralNetwork:
       #derivative of logit loss to be sent back
       d_in = - (np.divide(Y_real, Y_predicted + self.epsilon) - np.divide(1 - Y_real, 1 - Y_predicted + self.epsilon ))
       
-      for layer_num in reversed( range(len(self.layers) ) ):
+      for layer_num in reversed(range(len(self.layers))):
         #store output gradient (input gradient of the following layer)
         d_out = d_in
+        
         #get input gradient
         d_in = self.layers[layer_num].backward_prop( d_out )
     
     def update_params(self):
       for layer_num in range(len(self.layers)):
         self.layers[layer_num].update(self.learning_rate)
-    
     
     # returns the logit loss given real and predicted labels
     def logit_loss(self, Y_real, Y_predicted):
@@ -166,7 +166,6 @@ class NeuralNetwork:
     # returns average accuracy given real and predicted labels
     def get_accuracy(self, Y_real, Y_predicted):
       return ( (Y_predicted >= self.threshold)== Y_real).mean()
-    
     
     def train(self, X, Y_real,num_epochs, show_graph = True, mini_batch_size=0, X_val = None, Y_val = None):
     
@@ -207,11 +206,7 @@ class NeuralNetwork:
             val_acc,_ = self.test(X_val , Y_val)
             val_accuracy_list.append(val_acc)
 
-            
-        
-        
       #option to display the training loss and accuracy graph
-    
       if show_graph:
     
         x_axis = np.arange(num_epochs)
@@ -247,28 +242,27 @@ class NeuralNetwork:
       Y_predicted = self.forward_prop(X.T, training=False)
       return self.get_accuracy(Y_real, Y_predicted), Y_predicted
   
-#standalone main function to demonstrate the model's k-fold cross validation results on graphs
 def main_cv_grapher():
     
     np.random.seed(1)
     
-    #reading the data into a pandas dataframe and converting to numpy array
+    #reading the data
     data_heart = pd.read_csv('./heart.csv')
 
     #standardizing and shuffling the data 
     standardizer = utilities.Standardizer()
 
-    D = standardizer.standardize_data( data_heart.values )
+    D = standardizer.standardize_data(data_heart.values)
     
     #number of folds for k fold cross validation
     k=10
     num_epochs = 200
     learning_rate = 0.1
     
-    X_folds,Y_folds = utilities.k_fold_split( D, k )
+    X_folds,Y_folds = utilities.k_fold_split(D, k)
     
-    loss_data = np.zeros( (10,num_epochs) )
-    accuracy_data = np.zeros( (10,num_epochs) )
+    loss_data = np.zeros((10,num_epochs))
+    accuracy_data = np.zeros((10,num_epochs))
     
     val_accuracy = []
     
@@ -288,19 +282,21 @@ def main_cv_grapher():
     for i in range(10):
         
       #creating training data by omitting the ith fold
-      X_train = np.concatenate( X_folds[:i] + X_folds[i+1:] , axis=0 )
-      Y_train = np.concatenate( Y_folds[:i] + Y_folds[i+1:] , axis=0 )
+      X_train = np.concatenate(X_folds[:i] + X_folds[i+1:], axis=0)
+      Y_train = np.concatenate(Y_folds[:i] + Y_folds[i+1:], axis=0)
     
       #ith fold is the validation data
       X_val = X_folds[i]
       Y_val = Y_folds[i]
     
       newNetwork = NeuralNetwork(learning_rate)
+      
       #forming architecture
       newNetwork.addLayer(13, 16, "relu")
       newNetwork.addLayer(16, 8, "relu")
       newNetwork.addLayer(8, 1, "sigmoid")
-     #training the network
+
+      #training the network
       loss_series, train_accuracy_series = newNetwork.train(X_train,Y_train,num_epochs, False)
       
       #keeping track of the logit loss and train set accuracy series to 
@@ -310,7 +306,7 @@ def main_cv_grapher():
     
       #testing with ith fold
       avg_val_result,val_result = newNetwork.test(X_val,Y_val)
-      print("Iteration " + str(i) + " validation accuracy: " + str(avg_val_result) )
+      print("Iteration " + str(i) + " validation accuracy: " + str(avg_val_result))
       val_accuracy.append( avg_val_result )
     
       ax.plot(x_axis, loss_series )
@@ -322,7 +318,6 @@ def main_cv_grapher():
     #average values accross the 10 folds
     ax.plot(x_axis, avg_loss, label= "average loss", linewidth=3.0)
     ax2.plot(x_axis, avg_accuracy, label= "average accuracy", linewidth=3.0)
-    
     
     # Set a title of the current axes.
     ax.set_title('Neural Network Training Loss Graph for 10-fold Cross Validation')
@@ -337,9 +332,5 @@ def main_cv_grapher():
     print("Average validation accuracy: "+str(avg_val_accuracy))
 
 
-
 if __name__ == '__main__':
    main_cv_grapher()
-    
-
-

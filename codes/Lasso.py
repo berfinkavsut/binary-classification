@@ -1,6 +1,6 @@
 """
-Authors: Berfin Kavşut -  21602459
-         Mert Ertuğrul - 21703957
+Authors: Berfin Kavşut
+         Mert Ertuğrul
 """
 
 import numpy as np
@@ -19,7 +19,6 @@ class Lasso():
 
     def fit(self, X, Y, random_seed=1, num_epochs=3, learning_rate=0.01, show_graph=True, X_val = None, Y_val = None):
         
-        #print('fit')
         sample_no = X.shape[0]
         input_dim = X.shape[1]
 
@@ -41,6 +40,7 @@ class Lasso():
                 x = X[i, :]
                 x = np.reshape(x, (1, input_dim))
                 y = Y[i]
+                
                 # update coefficients
                 self.w = self.gradient_descent(self.w, x, y, learning_rate)
                 cost += self.calc_cost(self.w, x, y)
@@ -90,15 +90,13 @@ class Lasso():
                 ax2.set_title('Training Accuracy for Lasso')
 
             ax.set_title('Training Loss for Lasso')
-
+           
             #plt.savefig('lasso_training_graphs.png')
             plt.show()
+
         return self.w, weight_list, average_costs, accuracy_list
 
     def calc_cost(self, w, x, y):
-        
-        
-        #print('calc_cost')
         # calculate rss 
         rss = (1/2) * np.sum( np.square( y - (np.dot(x, w) ) )) 
 
@@ -109,36 +107,25 @@ class Lasso():
         cost = rss + reg_term
         return cost
     
-    
     # returns average accuracy given real and predicted labels
     def get_accuracy(self, Y_real, Y_predicted):
-        
         Y_labelled = (Y_predicted >= 0)
         Y_labelled = np.where(Y_labelled == 0, -1, Y_labelled)
         
         return ( Y_labelled == Y_real).mean()
 
-
     def gradient_descent(self, w, x, y, learning_rate):
-       
-        #print('grad_descent')
+    
         x = np.squeeze(x)
         w = np.squeeze(w)
         
-        #print('w',w)
-        #print('x',x)
-        #print('y',y)
-        
         n = w.shape[0]
-        #print(n)
         dw = np.zeros([1,n])
         dw = np.squeeze(dw)
-        #print(dw)
 
-        # gradient of ... loss 
+        # gradient of mse loss with l1 regularization
         for i in range(n):
-            rss_der = -1 * x[i] * ( y-np.dot( x,w.T ) )
-            #print('rss_der', rss_der)
+            rss_der = -1 * x[i] * (y-np.dot( x,w.T ))
             if w[i] > 0:
                 dw[i] = rss_der + self.l1_lambda
             else:
@@ -152,7 +139,3 @@ class Lasso():
         
         Y_pred = np.dot(X,self.w)
         return Y_pred
-
-
-                        
-    
